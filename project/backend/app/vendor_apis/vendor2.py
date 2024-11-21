@@ -1,9 +1,12 @@
 import httpx
 
 async def get_product(product_id: str):
-    url = f"https:api.vendor2.com/products/{product_id}"
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        if response.status_code ==200:
-            return response.json()
-        return None
+    # Vendor4 API çağrısı
+    # Örnek response
+    return {
+        "id": product_id,
+        "name": "Sample Product from Vendor4",
+        "description": "This is a sample description from Vendor4",
+        "price": 19.99,
+        "photos": ["https://parsadi.com/wp-content/uploads/2022/12/Vendor.jpg"],
+    }
