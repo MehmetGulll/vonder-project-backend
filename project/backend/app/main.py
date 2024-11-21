@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from .db import get_product_from_db, save_product_to_db
-from .vendor_apis import vendor1, vendor2, vendor3
-from .kafka import send_to_kafka
+from app.db import get_product_from_db, save_product_to_db
+from app.vendor_apis import vendor1, vendor2, vendor3 
+from app.kafka import send_to_kafka
+
 
 app = FastAPI()
 
