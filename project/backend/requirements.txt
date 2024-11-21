@@ -3,5 +3,5 @@ uvicorn
 httpx
 pydantic
 sqlalchemy
-psycopg2
+psycopg2-binary
 kafka-python
