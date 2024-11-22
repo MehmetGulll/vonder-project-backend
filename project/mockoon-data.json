@@ -1,0 +1,48 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Mock API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/vendor1/products/{id}": {
+        "get": {
+          "summary": "Get product by ID from Vendor 1",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "{{urlParam id}}" },
+                      "name": { "type": "string", "example": "Vendor 1 Product {{urlParam id}}" },
+                      "description": { "type": "string", "example": "Description for product {{urlParam id}} from Vendor 1" },
+                      "price": { "type": "number", "example": "{{math (add 10 (random 1 10))}}" },
+                      "photos": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "example": ["https://parsadi.com/wp-content/uploads/2022/12/Vendor-{{urlParam id}}.jpg"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
