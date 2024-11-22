@@ -1,27 +1,36 @@
 from fastapi import FastAPI, HTTPException, Query
 import asyncio
+import json
+import httpx
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+
+from app.vendor_apis.vendor1 import get_product as vendor1_get_product
+from app.vendor_apis.vendor2 import get_product as vendor2_get_product
+from app.vendor_apis.vendor3 import get_product as vendor3_get_product
 from app.db import async_get_product_from_db, async_get_all_products, create_products_table, async_save_product_to_db
-from app.vendor_apis import vendor1, vendor2, vendor3
 from app.kafka import send_to_kafka
 
 app = FastAPI()
 
-vendor_apis = [vendor1, vendor2, vendor3]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+vendor_apis = [vendor1_get_product, vendor2_get_product, vendor3_get_product]
 
 @app.on_event("startup")
 async def startup_event():
     await create_products_table()
     await fetch_and_save_initial_products()
 
-
-
-
-
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
-
 
 @app.get("/products")
 async def get_all_products(
@@ -31,7 +40,12 @@ async def get_all_products(
     products = await async_get_all_products(limit, offset)
     if not products:
         return {"message": "No products found"}
-    return products
+    grouped_products = {}
+    for product in products:
+        vendor_name = product["id"].split("-")[0]
+        grouped_products.setdefault(vendor_name, []).append(product)
+    
+    return {"data": grouped_products}
 
 
 @app.get("/product/{product_id}")
@@ -48,26 +62,43 @@ async def get_product(product_id: str):
     await async_save_product_to_db(product_data)
     return product_data
 
+@app.get("/proxy_image")
+async def proxy_image(url: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        if response.status_code == 200:
+            return StreamingResponse(
+                response.aiter_bytes(),
+                media_type=response.headers.get("content-type", "application/octet-stream"),
+            )
+        return {"error": "Unable to fetch image"}
+
 
 async def fetch_and_save_initial_products():
-    product_ids = ["1", "2", "3", "4", "5"]  
+    """Başlangıçta tüm vendor'lardan ürünleri çekip kaydeder."""
+    product_ids = ["1", "2", "3", "4", "5"] 
 
     for product_id in product_ids:
-        product_data = await fetch_product_data(product_id)
-        if product_data:
-            for product in product_data:
-                await async_save_product_to_db(product)
+        for index, vendor in enumerate(vendor_apis):
+            try:
+                vendor_name = f"Vendor{index + 1}"
+                vendor_data = await vendor(product_id) 
+                print(f"{vendor_name} response for product {product_id}: {vendor_data}") 
+                await async_save_product_to_db(vendor_data, vendor_name)
+            except Exception as e:
+                print(f"Error fetching product {product_id} from vendor {index + 1}: {e}")
 
 
 async def fetch_product_data(product_id: str):
-    vendor_calls = [vendor.get_product(product_id) for vendor in vendor_apis]
+    vendor_calls = [vendor(product_id) for vendor in vendor_apis]
     responses = await asyncio.gather(*vendor_calls, return_exceptions=True)
     
     data = []
-    for res in responses:
+    for index, res in enumerate(responses):
         if isinstance(res, Exception):
-            print(f"Error fetching data from vendor: {res}")
+            print(f"Error fetching data from vendor {index + 1}: {res}")
         elif res:
+            print(f"Vendor {index + 1} response for product {product_id}: {res}")
             data.append(res)
     
     if not data:
@@ -80,11 +111,19 @@ def unify_data(data: list):
     unified = []
     for vendor_data in data:
         if vendor_data:
+            photos = vendor_data.get("photos", [])
+      
+            if isinstance(photos, str):
+                try:
+                    photos = json.loads(photos) 
+                except json.JSONDecodeError:
+                    photos = [] 
+
             unified.append({
                 "id": vendor_data.get("id"),
                 "name": vendor_data.get("name"),
                 "description": vendor_data.get("description", ""),
                 "price": vendor_data.get("price"),
-                "photos": vendor_data.get("photos", []),
+                "photos": photos, 
             })
     return unified
