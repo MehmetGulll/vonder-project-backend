@@ -11,10 +11,7 @@ vendor_apis = [vendor1, vendor2, vendor3]
 
 @app.on_event("startup")
 async def startup_event():
-    # Veritabanı bağlantısını kontrol et ve tabloyu oluştur
     await create_products_table()
-
-    # Tedarikçi API'lerinden ürünleri çek ve veritabanına ekle
     await fetch_and_save_initial_products()
 
 
@@ -53,12 +50,12 @@ async def get_product(product_id: str):
 
 
 async def fetch_and_save_initial_products():
-    product_ids = ["1", "2", "3", "4", "5"]  # Örnek ürün ID'leri
+    product_ids = ["1", "2", "3", "4", "5"]  
 
     for product_id in product_ids:
         product_data = await fetch_product_data(product_id)
         if product_data:
-            for product in product_data:  # Tedarikçiden birden fazla ürün dönebilir
+            for product in product_data:
                 await async_save_product_to_db(product)
 
 

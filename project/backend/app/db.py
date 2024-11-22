@@ -8,19 +8,13 @@ DB_CONFIG = {
     "host": "postgres",
     "port": 5432
 }
-
-# Database bağlantı havuzu (singleton yapısı önerilir)
 pool = None
-
-
 async def get_db_connection():
     global pool
     if not pool:
         pool = await asyncpg.create_pool(**DB_CONFIG)
     return pool
 
-
-# Tablo oluşturma
 async def create_products_table():
     pool = await get_db_connection()
     async with pool.acquire() as conn:
@@ -40,7 +34,7 @@ async def create_products_table():
             raise
 
 
-# Veritabanından ürün alma
+
 async def async_get_product_from_db(product_id: str):
     pool = await get_db_connection()
     async with pool.acquire() as conn:
@@ -49,7 +43,7 @@ async def async_get_product_from_db(product_id: str):
     return dict(product) if product else None
 
 
-# Tüm ürünleri alma (limit ve offset ile)
+
 async def async_get_all_products(limit: int, offset: int):
     pool = await get_db_connection()
     async with pool.acquire() as conn:
@@ -66,12 +60,12 @@ async def async_get_all_products(limit: int, offset: int):
             raise
 
 
-# Ürün kaydetme
+
 async def async_save_product_to_db(product: dict):
     pool = await get_db_connection()
     async with pool.acquire() as conn:
         try:
-            # Photos alanını JSON string formatına dönüştür
+       
             photos_json = json.dumps(product["photos"])
             
             await conn.execute("""
@@ -83,7 +77,7 @@ async def async_save_product_to_db(product: dict):
                     price = EXCLUDED.price,
                     photos = EXCLUDED.photos
             """, product["id"], product["name"], product["description"],
-                product["price"], photos_json)  # JSON string olarak gönder
+                product["price"], photos_json)
         except Exception as e:
             print(f"Error saving product: {e}")
             raise
