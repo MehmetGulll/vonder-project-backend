@@ -25,6 +25,13 @@ class SQLAlchemyProductRepository:
         return result.scalars().all()
 
     async def save_product(self, product: dict):
-        orm_product = ProductORM(**product)
-        self.db.add(orm_product)
-        await self.db.commit()
+        try:
+            orm_product = ProductORM(**product)
+            print(f"[DEBUG] Saving product: {orm_product}")
+            self.db.add(orm_product)
+            await self.db.commit()
+            print(f"[DEBUG] Product saved successfully: {orm_product.id}")
+        except Exception as e:
+            print(f"[ERROR] Failed to save product: {e}")
+            raise
+
