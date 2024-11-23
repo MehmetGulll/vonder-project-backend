@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.database.base import Base
 from sqlalchemy import Column, String, Float, JSON
 
-# ORM Model
+
 class ProductORM(Base):
     __tablename__ = "products"
 
@@ -14,7 +14,7 @@ class ProductORM(Base):
     photos = Column(JSON)
 
 
-# Repository Sınıfı
+
 class SQLAlchemyProductRepository:
     def __init__(self, db: AsyncSession):
         self.db = db

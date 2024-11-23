@@ -1,11 +1,11 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    # Veritabanı Ayarları
+
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "password"
     DATABASE_NAME: str = "products"
-    DATABASE_HOST: str = "postgres"  # Docker kullanıyorsanız, bu 'postgres' olmalı
+    DATABASE_HOST: str = "postgres"  
     DATABASE_PORT: int = 5432
 
     @property
@@ -21,5 +21,5 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
-# Ayarları bir yerden erişilebilir hale getirmek için:
+
 settings = Settings()

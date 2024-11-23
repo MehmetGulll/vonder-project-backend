@@ -10,16 +10,16 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     """
     Sağlık kontrolü endpoint'i.
     """
-    # Veritabanı kontrolü
+
     try:
-        await db.execute("SELECT 1")  # Basit bir sorgu
+        await db.execute("SELECT 1") 
     except Exception as e:
         return {"status": "error", "database": str(e)}
 
     # Kafka kontrolü
     try:
         producer = KafkaProducer(bootstrap_servers=["kafka:9092"])
-        producer.close()  # Sadece bağlantıyı test ediyoruz
+        producer.close()
     except Exception as e:
         return {"status": "error", "kafka": str(e)}
 

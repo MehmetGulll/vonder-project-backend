@@ -33,7 +33,7 @@
                       "photos": {
                         "type": "array",
                         "items": { "type": "string" },
-                        "example": ["https://parsadi.com/wp-content/uploads/2022/12/Vendor-{{urlParam id}}.jpg"]
+                        "example": ["https://parsadi.com/wp-content/uploads/2022/12/Vendor{{urlParam id}}.jpg"]
                       }
                     }
                   }

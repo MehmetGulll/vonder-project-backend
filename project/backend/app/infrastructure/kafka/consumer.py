@@ -26,7 +26,7 @@ async def save_to_database(product_data: dict):
         repository = SQLAlchemyProductRepository(db_session)
         service = ProductService(repository)
 
-        # Kafka mesajını Product domain modeline dönüştür
+ 
         product = Product(
             id=product_data["id"],
             name=product_data["name"],
