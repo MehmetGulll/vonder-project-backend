@@ -6,6 +6,7 @@ from app.infrastructure.database.tables import create_products_table
 from app.application.use_cases.sync_products import fetch_and_save_initial_products
 from app.application.services.kafka_consumer import start_kafka_consumer
 from app.application.use_cases.get_all_products import get_all_products
+import httpx
 
 app = FastAPI()
 
