@@ -1,39 +1,11 @@
-import asyncpg
 import json
+from .db_connection import get_db_connection
 
-DB_CONFIG = {
-    "user": "postgres",
-    "password": "password",
-    "database": "products",
-    "host": "postgres",
-    "port": 5432
-}
-pool = None
-async def get_db_connection():
-    global pool
-    if not pool:
-        pool = await asyncpg.create_pool(**DB_CONFIG)
-    return pool
-
-async def create_products_table():
-    pool = await get_db_connection()
-    async with pool.acquire() as conn:
-        try:
-            await conn.execute("""
-                CREATE TABLE IF NOT EXISTS products (
-                    id VARCHAR PRIMARY KEY,
-                    name VARCHAR NOT NULL,
-                    description TEXT,
-                    price NUMERIC NOT NULL,
-                    photos JSONB
-                );
-            """)
-            print("Products table checked/created successfully.")
-        except Exception as e:
-            print(f"Error creating products table: {e}")
-            raise
 
 async def async_get_product_from_db(product_id: str):
+    """
+    Verilen ID'ye sahip bir ürünü veritabanından al.
+    """
     pool = await get_db_connection()
     async with pool.acquire() as conn:
         query = "SELECT id, name, description, price, photos FROM products WHERE id = $1"
@@ -41,13 +13,15 @@ async def async_get_product_from_db(product_id: str):
         if product:
             product_dict = dict(product)
             if isinstance(product_dict['photos'], str):
-                product_dict['photos'] = json.loads(product_dict['photos'])  
+                product_dict['photos'] = json.loads(product_dict['photos'])  # JSON string dönüştürme
             return product_dict
         return None
 
 
-
 async def async_get_all_products(limit: int, offset: int):
+    """
+    Veritabanından tüm ürünleri getir.
+    """
     pool = await get_db_connection()
     async with pool.acquire() as conn:
         try:
@@ -73,14 +47,18 @@ async def async_get_all_products(limit: int, offset: int):
             raise
 
 
-
-
 async def async_save_product_to_db(product: dict, vendor_name: str):
+    """
+    Bir ürünü veritabanına kaydet veya güncelle.
+    """
     pool = await get_db_connection()
     async with pool.acquire() as conn:
         try:
+            if "id" not in product or not product["id"]:
+                raise ValueError("Product data must contain an 'id' field")
+
             unique_id = f"{vendor_name}-{product['id']}"
-            photos_json = json.dumps(product["photos"]) 
+            photos_json = json.dumps(product["photos"])  # JSON dönüşümü
             await conn.execute("""
                 INSERT INTO products (id, name, description, price, photos)
                 VALUES ($1, $2, $3, $4, $5::jsonb)
@@ -90,7 +68,7 @@ async def async_save_product_to_db(product: dict, vendor_name: str):
                     price = EXCLUDED.price,
                     photos = EXCLUDED.photos
             """, unique_id, product["name"], product["description"],
-                product["price"], photos_json)
+                               product["price"], photos_json)
         except Exception as e:
             print(f"Error saving product: {e}")
             raise
