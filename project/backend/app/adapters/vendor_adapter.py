@@ -4,9 +4,7 @@ from app.core.mappers import map_vendor_data_to_standard, field_mapping
 
 
 async def get_product_from_vendor(vendor_name: str, product_id: str):
-    """
-    Belirtilen vendor'dan ürün bilgisini al.
-    """
+
     vendor_products = MOCK_DATA.get(vendor_name, [])
     if not vendor_products:
         print(f"No products found for vendor {vendor_name}")
