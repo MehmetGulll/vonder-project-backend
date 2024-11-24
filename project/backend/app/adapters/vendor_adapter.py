@@ -15,24 +15,23 @@ async def get_product_from_vendor(vendor_name: str, product_id: str):
     for product in vendor_products:
         print(f"Checking product: {product} for product_id: {product_id}")
 
-        # Ürün ID eşleşmesi
+
         if (
             product.get("id") == product_id or
             product.get("ProductID") == product_id or
             product.get("Product_Id") == product_id
         ):
             print(f"Found matching product: {product}")
-            # Vendor bilgilerini ve product_id'yi ekleyerek döndür
+
             vendor_data = {**product, "vendor_name": vendor_name, "product_id": product_id}
             return map_vendor_data_to_standard(vendor_data, field_mapping)
 
-        # Eğer `ProductName` veya `Product_Name` son kısmında `product_id` içeriyorsa
         if (
             product.get("ProductName", "").endswith(f"Product {product_id}") or
             product.get("Product_Name", "").endswith(f"Product {product_id}")
         ):
             print(f"Found matching product by name: {product}")
-            # Vendor bilgilerini ve product_id'yi ekleyerek döndür
+
             vendor_data = {**product, "vendor_name": vendor_name, "product_id": product_id}
             return map_vendor_data_to_standard(vendor_data, field_mapping)
 

@@ -2,9 +2,7 @@ from .db_connection import get_db_connection
 
 
 async def create_products_table():
-    """
-    Ürünler için tabloyu oluştur.
-    """
+ 
     pool = await get_db_connection()
     async with pool.acquire() as conn:
         try:

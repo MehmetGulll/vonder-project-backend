@@ -4,7 +4,7 @@ from app.infrastructure.database.database_adapter import async_get_product_from_
 
 @pytest.mark.asyncio
 async def test_async_get_product_from_db(mocker):
-    # Veritabanı bağlantısını mockluyoruz.
+
     mocker.patch(
         "app.infrastructure.database.db_connection.get_db_connection",
         return_value=mocker.AsyncMock(),
@@ -12,12 +12,12 @@ async def test_async_get_product_from_db(mocker):
 
     product_id = "test-id"
     product = await async_get_product_from_db(product_id)
-    assert product is None  # Mock bir sonuç döndürüyor
+    assert product is None 
 
 
 @pytest.mark.asyncio
 async def test_async_save_product_to_db(mocker):
-    # Veritabanı bağlantısını mockluyoruz.
+
     mocker.patch(
         "app.infrastructure.database.db_connection.get_db_connection",
         return_value=mocker.AsyncMock(),

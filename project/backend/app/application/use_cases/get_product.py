@@ -5,15 +5,7 @@ from app.adapters.vendor_adapter import fetch_product_data
 
 
 async def get_product_by_id(product_id: str) -> Dict[str, Any]:
-    """
-    Belirli bir ürünü getir. Eğer ürün bulunamazsa vendor'dan çek ve Kafka'ya gönder.
-
-    Args:
-        product_id (str): Ürünün benzersiz kimliği.
-
-    Returns:
-        Dict[str, Any]: Ürün bilgisi, hata mesajı veya işlem durumu.
-    """
+  
     try:
         # Veritabanından ürünü al
         product = await async_get_product_from_db(product_id)

@@ -11,9 +11,7 @@ producer = KafkaProducer(
 
 
 def send_to_kafka(data: dict):
-    """
-    Kafka'ya veri gönder.
-    """
+   
     try:
         producer.send(KAFKA_TOPIC, value=data)
         print(f"Data sent to Kafka topic '{KAFKA_TOPIC}': {data}")

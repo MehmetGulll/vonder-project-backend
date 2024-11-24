@@ -12,7 +12,7 @@ async def test_health_check(test_client):
 async def test_get_products(test_client):
     response = await test_client.get("/products?limit=5&offset=0")
     assert response.status_code == 200
-    assert "data" in response.json()  # Grup ürünlerini kontrol ediyor
+    assert "data" in response.json()  
 
 
 @pytest.mark.asyncio

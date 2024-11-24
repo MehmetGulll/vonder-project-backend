@@ -17,9 +17,7 @@ consumer = KafkaConsumer(
 
 
 async def process_kafka_message(message: dict):
-    """
-    Kafka'dan gelen mesajı işle ve veritabanına kaydet.
-    """
+
     try:
         vendor_name = message.get("vendor", "unknown_vendor")
         await async_save_product_to_db(message, vendor_name)
@@ -30,9 +28,7 @@ async def process_kafka_message(message: dict):
 
 
 def kafka_consumer_thread():
-    """
-    Kafka Consumer için bir thread başlat.
-    """
+    
     print("Starting Kafka Consumer...")
     for message in consumer:
         product_data = message.value
