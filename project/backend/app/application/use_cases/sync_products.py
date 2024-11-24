@@ -16,7 +16,7 @@ async def fetch_and_save_initial_products():
                     continue
 
                 vendor_data["id"] = vendor_data.get("id", f"{vendor_name}-{product_id}")
-                vendor_data["photos"] = vendor_data.get("photos", ["https://example.com/default-image.jpg"])
+                vendor_data["photos"] = vendor_data.get("photos", ["https://parsadi.com/wp-content/uploads/2022/12/Vendor.jpg"])
 
                 print(f"Fetched vendor data: {vendor_data}")
 
